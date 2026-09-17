@@ -1,6 +1,13 @@
 # 100 W 双向四开关 Buck Boost 变换器设计
 
-[下载设计说明 Word 黑白表格版](100W_Bidirectional_BuckBoost_Design.docx)
+<p align="center">
+  <img src="../3D%E7%AC%AC%E4%B8%80%E5%BC%A0_3DHero.png" alt="变换器 PCB 3D 预览" width="900">
+</p>
+
+<p align="center">
+  <img src="../PCB%E9%A1%B6%E9%9D%A2_PCBTop.png" alt="PCB 顶面" width="49%">
+  <img src="../PCB%E5%BA%95%E9%9D%A2_PCBBottom.png" alt="PCB 底面" width="49%">
+</p>
 
 ## 项目状态
 
