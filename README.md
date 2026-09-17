@@ -1,5 +1,7 @@
 # 100 W 双向四开关 Buck Boost 变换器设计
 
+**中文** | [English](README.en.md)
+
 <p align="center">
   <img src="3D%E7%AC%AC%E4%B8%80%E5%BC%A0_3DHero.png" alt="变换器 PCB 3D 预览" width="900">
 </p>
