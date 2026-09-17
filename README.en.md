@@ -12,12 +12,21 @@
 [中文](README.md) | **English**
 
 ## Project Status
-
-| **Item** | **Current status** | **Notes** |
-|---|---|---|
-| PSIM simulation | ✅ Preliminary validation completed | Covers bidirectional buck, boost, the transition region, and typical CCM and DCM conditions |
-| Main power board and daughterboard | 🟡 Bare boards completed | Component assembly, power-up, and full-power experiments have not yet been completed |
-| Efficiency, ripple, and protection | ⏳ Pending measurement | Values in this report are design targets or simulation results, not hardware test conclusions |
+🟢 Parameter Design<br>
+🟢 Topology & Control Strategy Design<br>
+🟢 Component Selection<br>
+🟢 Schematic Design<br>
+🟢 PSIM Simulation Verification<br>
+🟢 PCB Design<br>
+🟢 PCB Fabrication<br>
+🟢 PCB Received<br>
+🟢 BOM Procurement<br>
+🟡 Awaiting SMT Assembly<br>
+⚪ First Power-Up<br>
+⚪ Hardware Debugging<br>
+⚪ Control Firmware Integration<br>
+⚪ Hardware Performance Testing<br>
+⚪ Final Testing & Project Summary
 
 This report records the design basis, control methods, and preliminary validation results for the first hardware revision. Once hardware testing is completed, I will continue adding data on efficiency, ripple, temperature rise, dynamic response, and protection operation.
 
