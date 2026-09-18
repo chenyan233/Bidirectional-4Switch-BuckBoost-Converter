@@ -28,7 +28,12 @@
 ⚪ Hardware Performance Testing<br>
 ⚪ Final Testing & Project Summary
 
-This report records the design basis, control methods, and preliminary validation results for the first hardware revision. Once hardware testing is completed, I will continue adding data on efficiency, ripple, temperature rise, dynamic response, and protection operation.
+
+This project is partially open-source and is mainly intended to showcase my design process, engineering approach, and implementation methodology.
+
+If you are interested in this project or would like to discuss the design concepts, schematic files, PCB files, BOM, or other related details, feel free to contact me at: [junkangzhang@qq.com](mailto:junkangzhang@qq.com)
+
+I’d be happy to exchange ideas with you and discuss ways to further improve the design.
 
 ## 1 Project Background
 
