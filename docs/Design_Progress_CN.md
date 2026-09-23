@@ -13,11 +13,20 @@
 
 ## 项目状态
 
-| **项目**         | **当前状态**     | **说明**                                             |
-|------------------|------------------|------------------------------------------------------|
-| PSIM 仿真        | ✅ 已完成阶段性验证 | 覆盖双向 Buck、Boost、交接区以及 CCM 与 DCM 典型工况 |
-| 主功率板与插板   | 🟡 裸板已完成       | 尚未完成贴片、上电和满功率实验                       |
-| 效率、纹波与保护 | ⏳ 待实测           | 当前记录设计目标与仿真结果，实测数据将在调试后补充 |
+<p align="center">表 1 项目进度</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>项目</strong></th><th align="center"><strong>当前状态</strong></th><th align="center"><strong>说明</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">PSIM 仿真</td><td align="center">✅ 已完成阶段性验证</td><td align="center">覆盖双向 Buck、Boost、交接区以及 CCM 与 DCM 典型工况</td></tr>
+    <tr><td align="center">主功率板与插板</td><td align="center">🟡 裸板已完成</td><td align="center">尚未完成贴片、上电和满功率实验</td></tr>
+    <tr><td align="center">效率、纹波与保护</td><td align="center">⏳ 待实测</td><td align="center">当前记录设计目标与仿真结果，实测数据将在调试后补充</td></tr>
+  </tbody>
+</table>
+</div>
 
 本报告记录首版硬件的设计依据、控制方法和阶段性验证结果。实板测试完成后，将继续补充效率、纹波、温升、动态响应和保护动作数据。
 
@@ -55,19 +64,28 @@
 
 本项目的基本设计规格如下：
 
-| **参数**         | **设计值**                        |
-|------------------|-----------------------------------|
-| 拓扑             | 四开关同步非隔离双向 Buck-Boost   |
-| 额定功率         | 100 W                             |
-| A 端电压         | 18～30 V                          |
-| B 端电压         | 24 V 标称控制点                   |
-| 功率方向         | 双向                              |
-| 开关频率         | 100 kHz                           |
-| 设计电流纹波率   | <span>r = 0.4</span>                       |
-| 额定负载状态     | CCM                               |
-| 轻载状态         | DCM（控制策略仍在优化）           |
-| 目标效率         | 98.5%（设计目标，待实测）         |
-| 输出电压纹波目标 | ≤0.5%（首板目标；0.1%为挑战目标） |
+<p align="center">表 2 主要设计参数</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>参数</strong></th><th align="center"><strong>设计值</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">拓扑</td><td align="center">四开关同步非隔离双向 Buck-Boost</td></tr>
+    <tr><td align="center">额定功率</td><td align="center">100 W</td></tr>
+    <tr><td align="center">A 端电压</td><td align="center">18～30 V</td></tr>
+    <tr><td align="center">B 端电压</td><td align="center">24 V 标称控制点</td></tr>
+    <tr><td align="center">功率方向</td><td align="center">双向</td></tr>
+    <tr><td align="center">开关频率</td><td align="center">100 kHz</td></tr>
+    <tr><td align="center">设计电流纹波率</td><td align="center"><span>r = 0.4</span></td></tr>
+    <tr><td align="center">额定负载状态</td><td align="center">CCM</td></tr>
+    <tr><td align="center">轻载状态</td><td align="center">DCM（控制策略仍在优化）</td></tr>
+    <tr><td align="center">目标效率</td><td align="center">98.5%（设计目标，待实测）</td></tr>
+    <tr><td align="center">输出电压纹波目标</td><td align="center">≤0.5%（首板目标；0.1%为挑战目标）</td></tr>
+  </tbody>
+</table>
+</div>
 
 B 端的 24 V 是当前控制与仿真的标称工作点。四开关双向 Buck-Boost 允许 A、B 两端在器件额定值、保护阈值和控制范围内作为输入或输出。本项目固定 B 端为 24 V，主要用于刻画 24 V 电池或低压直流母线一侧的工作状态。
 
@@ -139,14 +157,23 @@ $$
 
 据此，我希望所选电感至少满足以下条件：
 
-| **参数**         | **目标**                      |
-|------------------|-------------------------------|
-| 标称电感         | 33 µH                         |
-| 大电流下有效电感 | 尽量保持在 28.8 µH 附近或以上 |
-| 饱和电流         | ≥10 A                         |
-| 温升额定电流     | ≥8 A                          |
-| DCR              | \<15 mΩ                       |
-| 结构             | 屏蔽型电感                    |
+<p align="center">表 3 主功率电感选型指标</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>参数</strong></th><th align="center"><strong>目标</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">标称电感</td><td align="center">33 µH</td></tr>
+    <tr><td align="center">大电流下有效电感</td><td align="center">尽量保持在 28.8 µH 附近或以上</td></tr>
+    <tr><td align="center">饱和电流</td><td align="center">≥10 A</td></tr>
+    <tr><td align="center">温升额定电流</td><td align="center">≥8 A</td></tr>
+    <tr><td align="center">DCR</td><td align="center">&lt;15 mΩ</td></tr>
+    <tr><td align="center">结构</td><td align="center">屏蔽型电感</td></tr>
+  </tbody>
+</table>
+</div>
 
 低 DCR 有利于降低电感铜损：
 
@@ -456,14 +483,23 @@ A、B 母线的指示灯分别通过 22 kΩ 电阻直接接在母线上，主要
 
 主功率板采用六层结构，功率器件主要位于顶层，内部层分别承担功率回流、信号与逻辑电源分配，底层布置采样和保护电路。
 
-| **层** | **主要功能**                                                                 |
-|--------|------------------------------------------------------------------------------|
-| 顶层   | 主电感、MOSFET、功率回路、防反接、栅极驱动、控制接口、电流采样核心与状态指示 |
-| 第二层 | PGND，主要覆盖功率区域，并避开 PWM 使能和 Kelvin 采样区域                    |
-| 第三层 | Kelvin、PWM、ADC 等信号走线                                                  |
-| 第四层 | GND 参考平面，基本覆盖整板                                                   |
-| 第五层 | 3.3 V 逻辑电源分配                                                           |
-| 底层   | ADC、故障锁存、温度检测以及过流过压关断电路                                  |
+<p align="center">表 4 PCB 层叠与功能分配</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>层</strong></th><th align="center"><strong>主要功能</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">顶层</td><td align="center">主电感、MOSFET、功率回路、防反接、栅极驱动、控制接口、电流采样核心与状态指示</td></tr>
+    <tr><td align="center">第二层</td><td align="center">PGND，主要覆盖功率区域，并避开 PWM 使能和 Kelvin 采样区域</td></tr>
+    <tr><td align="center">第三层</td><td align="center">Kelvin、PWM、ADC 等信号走线</td></tr>
+    <tr><td align="center">第四层</td><td align="center">GND 参考平面，基本覆盖整板</td></tr>
+    <tr><td align="center">第五层</td><td align="center">3.3 V 逻辑电源分配</td></tr>
+    <tr><td align="center">底层</td><td align="center">ADC、故障锁存、温度检测以及过流过压关断电路</td></tr>
+  </tbody>
+</table>
+</div>
 
 ### 7.1 功率区与控制区
 
@@ -539,11 +575,20 @@ $$
 
 交接区采用双占空比控制（采用占空比固定差值法，美国专利 US 7,804,283 B2），定义 <span>D<sub>buck</sub></span>和 <span>D<sub>boost</sub></span>。以 A→B 为例，一个开关周期内实际上只有三个主要状态：
 
-| **状态** | **导通组合** | **电感电压**      | **持续时间**                                               |
-|----------|--------------|-------------------|------------------------------------------------------------|
-| 储能     | Q1 + Q4      | <span>V<sub>A</sub></span>         | <span>D<sub>boost</sub>T<sub>s</sub></span>                                  |
-| 传能     | Q1 + Q3      | <span>V<sub>A</sub> - V<sub>B</sub></span> | <span>( D<sub>buck</sub> - D<sub>boost</sub> )T<sub>s</sub></span> |
-| 续流     | Q2 + Q3      | <span>- V<sub>B</sub></span>       | <span>( 1 - D<sub>buck</sub> )T<sub>s</sub></span>                |
+<p align="center">表 5 交接区开关状态与电感电压</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>状态</strong></th><th align="center"><strong>导通组合</strong></th><th align="center"><strong>电感电压</strong></th><th align="center"><strong>持续时间</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">储能</td><td align="center">Q1 + Q4</td><td align="center"><span>V<sub>A</sub></span></td><td align="center"><span>D<sub>boost</sub>T<sub>s</sub></span></td></tr>
+    <tr><td align="center">传能</td><td align="center">Q1 + Q3</td><td align="center"><span>V<sub>A</sub> - V<sub>B</sub></span></td><td align="center"><span>( D<sub>buck</sub> - D<sub>boost</sub> )T<sub>s</sub></span></td></tr>
+    <tr><td align="center">续流</td><td align="center">Q2 + Q3</td><td align="center"><span>- V<sub>B</sub></span></td><td align="center"><span>( 1 - D<sub>buck</sub> )T<sub>s</sub></span></td></tr>
+  </tbody>
+</table>
+</div>
 
 三个状态的时间加起来刚好是一个开关周期。按照电感伏秒平衡，可以得到
 
@@ -607,12 +652,21 @@ $$
 
 我没有把进入和退出阈值设成完全相同，留了 1% 的滞环：
 
-| **当前状态**     | **切换条件**                | **下一状态**     |
-|------------------|-----------------------------|------------------|
-| A桥高频，B桥直通 | <span>ε ≤ + 10%</span> | 交接区           |
-| 交接区           | <span>ε ≥ + 11%</span> | A桥高频，B桥直通 |
-| B桥高频，A桥直通 | <span>ε ≥ - 10%</span> | 交接区           |
-| 交接区           | <span>ε ≤ - 11%</span> | B桥高频，A桥直通 |
+<p align="center">表 6 工作区切换条件</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>当前状态</strong></th><th align="center"><strong>切换条件</strong></th><th align="center"><strong>下一状态</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">A桥高频，B桥直通</td><td align="center"><span>ε ≤ + 10%</span></td><td align="center">交接区</td></tr>
+    <tr><td align="center">交接区</td><td align="center"><span>ε ≥ + 11%</span></td><td align="center">A桥高频，B桥直通</td></tr>
+    <tr><td align="center">B桥高频，A桥直通</td><td align="center"><span>ε ≥ - 10%</span></td><td align="center">交接区</td></tr>
+    <tr><td align="center">交接区</td><td align="center"><span>ε ≤ - 11%</span></td><td align="center">B桥高频，A桥直通</td></tr>
+  </tbody>
+</table>
+</div>
 
 这 1% 的差值主要是为了防止 <span>V<sub>A</sub></span>和 <span>V<sub>B</sub></span>在边界附近有纹波或者采样噪声时，状态机在 Buck 和交接区、或者 Boost 和交接区之间反复跳变。
 
@@ -624,11 +678,20 @@ STM32 根据工作区和功率方向生成四路 PWM。每个桥臂的上下管�
 
 下表给出 A→B 方向的基本调制关系。B→A 时，应按实际输入、输出电压重新判断升压或降压；高频调制的物理桥臂仍遵循第 8.4 节的电压分区规则。表中的保持导通状态适用于正常能量传输，轻载零电流区间另按 DCM 策略处理。
 
-| **工作区** | **高频调制桥臂** | **保持导通器件** | **说明**             |
-|------------|------------------|------------------|----------------------|
-| Buck       | A 桥 Q1 Q2       | B 侧高管 Q3      | A 端高于 B 端        |
-| 交接区     | A 桥与 B 桥      | 无固定单侧直通   | 两侧采用协调双占空比 |
-| Boost      | B 桥 Q3 Q4       | A 侧高管 Q1      | A 端低于 B 端        |
+<p align="center">表 7 A→B 方向的桥臂调制关系</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>工作区</strong></th><th align="center"><strong>高频调制桥臂</strong></th><th align="center"><strong>保持导通器件</strong></th><th align="center"><strong>说明</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Buck</td><td align="center">A 桥 Q1 Q2</td><td align="center">B 侧高管 Q3</td><td align="center">A 端高于 B 端</td></tr>
+    <tr><td align="center">交接区</td><td align="center">A 桥与 B 桥</td><td align="center">无固定单侧直通</td><td align="center">两侧采用协调双占空比</td></tr>
+    <tr><td align="center">Boost</td><td align="center">B 桥 Q3 Q4</td><td align="center">A 侧高管 Q1</td><td align="center">A 端低于 B 端</td></tr>
+  </tbody>
+</table>
+</div>
 
 ### 8.6 CCM 与 DCM
 
@@ -642,9 +705,9 @@ STM32 根据工作区和功率方向生成四路 PWM。每个桥臂的上下管�
 
 ### 9.1 仿真模型
 
-![四开关双向 Buck-Boost 的 PSIM 仿真模型](../assets/design-report/psim-model.png)
+<p align="center"><img src="../assets/design-report/psim-model.png" alt="四开关双向 Buck-Boost 的 PSIM 仿真模型"></p>
 
-图 1 四开关双向 Buck-Boost 的 PSIM 仿真模型
+<p align="center">图 1 四开关双向 Buck-Boost 的 PSIM 仿真模型</p>
 
 第一阶段先使用理想 MOSFET 和电感模型，验证双向功率流、稳态参数和功率级拓扑是否正确。
 
@@ -652,57 +715,57 @@ STM32 根据工作区和功率方向生成四路 PWM。每个桥臂的上下管�
 
 ### 9.2 正向功率流模式跨越
 
-![A 端电压跨越 30 V 24 V 18 V 时的母线电压响应](../assets/design-report/forward-voltage-transition.png)
+<p align="center"><img src="../assets/design-report/forward-voltage-transition.png" alt="A 端电压跨越 30 V 24 V 18 V 时的母线电压响应"></p>
 
-图 2 A 端 30 V 24 V 18 V 变化时的两端母线电压响应
+<p align="center">图 2 A 端 30 V 24 V 18 V 变化时的两端母线电压响应</p>
 
 该图包含启动和工作点切换过程。B 端在前段出现约 11 V 的最低点，因此它用于展示控制器跨越 Buck、交接区与 Boost 的工作过程。后续将分别给出启动、输入阶跃和稳态窗口。
 
 ### 9.3 电感电流动态响应
 
-![正向综合工况的电感电流动态响应](../assets/design-report/inductor-current-transient.png)
+<p align="center"><img src="../assets/design-report/inductor-current-transient.png" alt="正向综合工况的电感电流动态响应"></p>
 
-图 3 正向综合工况下的电感电流动态响应
+<p align="center">图 3 正向综合工况下的电感电流动态响应</p>
 
 电感电流随输入电压、负载和工作区发生变化。切换时存在明显暂态峰值，当前结果主要证明状态机和功率流方向能够连续运行；峰值电流和恢复时间仍需在分工况波形中单独量化。
 
 ### 9.4 重载 CCM 电感电流
 
-![重载 CCM 电感电流](../assets/design-report/ccm-inductor-current.png)
+<p align="center"><img src="../assets/design-report/ccm-inductor-current.png" alt="重载 CCM 电感电流"></p>
 
-图 4 重载 CCM 稳态电感电流
+<p align="center">图 4 重载 CCM 稳态电感电流</p>
 
 所选稳态窗口内电感电流保持连续，峰峰值约为 1.4 A，与 33 µH 电感的理论纹波校核基本一致。
 
 ### 9.5 轻载 DCM 电感电流
 
-![轻载 DCM 电感电流](../assets/design-report/dcm-inductor-current.png)
+<p align="center"><img src="../assets/design-report/dcm-inductor-current.png" alt="轻载 DCM 电感电流"></p>
 
-图 5 轻载 DCM 电感电流
+<p align="center">图 5 轻载 DCM 电感电流</p>
 
 电流已经出现零电流区间，但过零后仍有小幅负向振荡。因此该波形只作为 DCM 阶段性结果，ZCD 阈值、模式退出条件和同步管关断时序仍需继续优化。
 
 ### 9.6 反向 24 V 至 30 V Boost
 
-![反向 24 V 至 30 V Boost 响应](../assets/design-report/reverse-boost-24-to-30.png)
+<p align="center"><img src="../assets/design-report/reverse-boost-24-to-30.png" alt="反向 24 V 至 30 V Boost 响应"></p>
 
-图 6 B 端向 A 端传输时的 24 V 至 30 V Boost 响应
+<p align="center">图 6 B 端向 A 端传输时的 24 V 至 30 V Boost 响应</p>
 
 本工况由 B 端向 A 端供能，B 端标称电压为 24 V，A 端目标电压为 30 V。图中 VBUS_A（绿色）和 VBUS_B（红色）分别为两端母线电压，单位为 V；iL（蓝色）为电感电流，I_CONNECTOR_A（浅橙色）和 I_CONNECTOR_B（橙色）为两端接口电流，单位为 A，横轴为时间。电感电流以 A→B 为正，因此反向传能时 iL 为负。波形展示 A 端电压经历暂态后恢复至约 30 V 的过程；B 端实际母线电压以红色曲线为准。
 
 ### 9.7 反向 24 V 至 18 V Buck
 
-![反向 24 V 至 18 V Buck 响应](../assets/design-report/reverse-buck-24-to-18.png)
+<p align="center"><img src="../assets/design-report/reverse-buck-24-to-18.png" alt="反向 24 V 至 18 V Buck 响应"></p>
 
-图 7 B 端向 A 端传输时的 24 V 至 18 V Buck 响应
+<p align="center">图 7 B 端向 A 端传输时的 24 V 至 18 V Buck 响应</p>
 
 本工况由 B 端向 A 端供能，B 端标称电压为 24 V，A 端目标电压为 18 V。曲线名称、单位及电感电流正方向与图 6 相同。A 端电压在前段下降至约 10 V，随后恢复至约 18 V；负向电感电流对应 B→A 的能量传输。因此，本图用于展示反向降压的动态过程。
 
 ### 9.8 四路 MOSFET 栅源电压
 
-![Q1 Q2 Q3 Q4 的 VGS 波形](../assets/design-report/mosfet-gate-voltages.png)
+<p align="center"><img src="../assets/design-report/mosfet-gate-voltages.png" alt="Q1 Q2 Q3 Q4 的 VGS 波形"></p>
 
-图 8 Q1 Q2 Q3 Q4 的 VGS 波形
+<p align="center">图 8 Q1 Q2 Q3 Q4 的 VGS 波形</p>
 
 该图展示四路 PWM 与栅极驱动时序。200 ns 死区的测量将在开关沿附近展开，并在实板 MOSFET 引脚处确认有效死区。
 
@@ -710,21 +773,21 @@ STM32 根据工作区和功率方向生成四路 PWM。每个桥臂的上下管�
 
 ### 10.1 首板状态
 
-![主功率板裸板正面](../assets/design-report/power-board-front.jpeg)
+<p align="center"><img src="../assets/design-report/power-board-front.jpeg" alt="主功率板裸板正面"></p>
 
-![主功率板裸板背面](../assets/design-report/power-board-back.jpeg)
+<p align="center"><img src="../assets/design-report/power-board-back.jpeg" alt="主功率板裸板背面"></p>
 
-图 9 主功率板裸板正反面
+<p align="center">图 9 主功率板裸板正反面</p>
 
 同时设计了一块两层 MCU 插板，用于连接控制器与主功率板，并预留扩展控制接口和 OLED 显示接口。后续可显示功率流向、效率、故障状态和主要采样量。目前主功率板和插板均为裸板状态，尚未完成贴片和上电。
 
-![MCU 插板与控制板](../assets/design-report/controller-boards.jpeg)
+<p align="center"><img src="../assets/design-report/controller-boards.jpeg" alt="MCU 插板与控制板"></p>
 
-![MCU 插板与 OLED](../assets/design-report/controller-oled.jpeg)
+<p align="center"><img src="../assets/design-report/controller-oled.jpeg" alt="MCU 插板与 OLED"></p>
 
-![MCU 插板装配角度](../assets/design-report/controller-assembly.jpeg)
+<p align="center"><img src="../assets/design-report/controller-assembly.jpeg" alt="MCU 插板装配角度"></p>
 
-图 10 MCU 插板与 OLED 安装方式
+<p align="center">图 10 MCU 插板与 OLED 安装方式</p>
 
 ### 10.2 首次上电顺序
 

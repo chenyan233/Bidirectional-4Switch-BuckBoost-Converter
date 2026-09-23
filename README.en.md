@@ -69,27 +69,36 @@ Therefore, although the overall power is only around 100 W, most of the complete
 
 The basic design specifications are as follows:
 
-| **Parameter** | **Design value** |
-|---|---|
-| Topology | Four-switch synchronous, non-isolated, bidirectional buck-boost |
-| Rated power | 100 W |
-| Port A voltage | 18–30 V |
-| Port B voltage | 24 V nominal control operating point |
-| Power direction | Bidirectional |
-| Switching frequency | 100 kHz |
-| Design current ripple ratio | <span>r = 0.4</span> |
-| Rated-load operation | CCM |
-| Light-load operation | DCM (control strategy still being optimized) |
-| Target efficiency | 98.5% (design target, pending measurement) |
-| Output voltage ripple target | ≤0.5% (first-board target; 0.1% is a stretch target) |
+<p align="center">Table 1 Main design parameters</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>Parameter</strong></th><th align="center"><strong>Design value</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Topology</td><td align="center">Four-switch synchronous, non-isolated, bidirectional buck-boost</td></tr>
+    <tr><td align="center">Rated power</td><td align="center">100 W</td></tr>
+    <tr><td align="center">Port A voltage</td><td align="center">18–30 V</td></tr>
+    <tr><td align="center">Port B voltage</td><td align="center">24 V nominal control operating point</td></tr>
+    <tr><td align="center">Power direction</td><td align="center">Bidirectional</td></tr>
+    <tr><td align="center">Switching frequency</td><td align="center">100 kHz</td></tr>
+    <tr><td align="center">Design current ripple ratio</td><td align="center"><span>r = 0.4</span></td></tr>
+    <tr><td align="center">Rated-load operation</td><td align="center">CCM</td></tr>
+    <tr><td align="center">Light-load operation</td><td align="center">DCM (control strategy still being optimized)</td></tr>
+    <tr><td align="center">Target efficiency</td><td align="center">98.5% (design target, pending measurement)</td></tr>
+    <tr><td align="center">Output voltage ripple target</td><td align="center">≤0.5% (first-board target; 0.1% is a stretch target)</td></tr>
+  </tbody>
+</table>
+</div>
 
 The 24 V at port B is the nominal operating point for the current control design and simulations. The four-switch bidirectional buck-boost topology allows both ports A and B to act as input or output within the component ratings, protection thresholds, and control range. In this project, port B is fixed at 24 V mainly to represent operation on the side connected to a 24 V battery or a low-voltage DC bus.
 
 ## 3 Power Stage Design
 
-![Figure 1 Four-switch bidirectional buck-boost power stage and control, sensing, and protection architecture](assets/diagrams/fig01-power-stage-architecture.svg)
+<p align="center"><img src="assets/diagrams/fig01-power-stage-architecture.svg" alt="Figure 1 Four-switch bidirectional buck-boost power stage and control, sensing, and protection architecture"></p>
 
-Figure 1 Four-switch bidirectional buck-boost power stage and control, sensing, and protection architecture
+<p align="center">Figure 1 Four-switch bidirectional buck-boost power stage and control, sensing, and protection architecture</p>
 
 The upper panel shows the two half bridges, the 33 µH main inductor, and the series current shunt. Inductor current is defined as positive from A to B. The lower panel separates the STM32 control loops, PWM hardware gating, HIP4081AIBZ gate driver, and voltage and current sensing. Overcurrent and overvoltage comparators feed the fault latch and hardware shutdown path without waiting for a software-loop response.
 
@@ -159,14 +168,23 @@ Actual selection also requires checking DCR, effective inductance under DC bias,
 
 Based on this, I want the selected inductor to meet at least the following conditions:
 
-| **Parameter** | **Target** |
-|---|---|
-| Nominal inductance | 33 µH |
-| Effective inductance at high current | Keep as close as possible to 28.8 µH or above |
-| Saturation current | ≥10 A |
-| Temperature-rise current rating | ≥8 A |
-| DCR | <15 mΩ |
-| Construction | Shielded inductor |
+<p align="center">Table 2 Main power inductor selection criteria</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>Parameter</strong></th><th align="center"><strong>Target</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Nominal inductance</td><td align="center">33 µH</td></tr>
+    <tr><td align="center">Effective inductance at high current</td><td align="center">Keep as close as possible to 28.8 µH or above</td></tr>
+    <tr><td align="center">Saturation current</td><td align="center">≥10 A</td></tr>
+    <tr><td align="center">Temperature-rise current rating</td><td align="center">≥8 A</td></tr>
+    <tr><td align="center">DCR</td><td align="center">&lt;15 mΩ</td></tr>
+    <tr><td align="center">Construction</td><td align="center">Shielded inductor</td></tr>
+  </tbody>
+</table>
+</div>
 
 Low DCR helps reduce inductor copper losses:
 
@@ -476,14 +494,23 @@ These LEDs are used only for status indication, so their currents are kept low t
 
 The main power board uses a six-layer structure. Power components are mainly on the top layer, internal layers handle power return, signals, and logic-power distribution, and the bottom layer contains sensing and protection circuits.
 
-| **Layer** | **Main Function** |
-|--------|--------------------------------------------------------------|
-| Top layer | Main inductor, MOSFETs, power circuit, reverse-polarity protection, gate drive, control interface, current-sensing core, and status indicators |
-| Layer 2 | PGND, mainly covering the power region while avoiding the PWM enable and Kelvin sensing areas |
-| Layer 3 | Signal routing for Kelvin, PWM, ADC, and other signals |
-| Layer 4 | GND reference plane covering essentially the entire board |
-| Layer 5 | 3.3 V logic-power distribution |
-| Bottom layer | ADC, fault latch, temperature sensing, and overcurrent/overvoltage shutdown circuits |
+<p align="center">Table 3 PCB layer stack and functional allocation</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>Layer</strong></th><th align="center"><strong>Main Function</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Top layer</td><td align="center">Main inductor, MOSFETs, power circuit, reverse-polarity protection, gate drive, control interface, current-sensing core, and status indicators</td></tr>
+    <tr><td align="center">Layer 2</td><td align="center">PGND, mainly covering the power region while avoiding the PWM enable and Kelvin sensing areas</td></tr>
+    <tr><td align="center">Layer 3</td><td align="center">Signal routing for Kelvin, PWM, ADC, and other signals</td></tr>
+    <tr><td align="center">Layer 4</td><td align="center">GND reference plane covering essentially the entire board</td></tr>
+    <tr><td align="center">Layer 5</td><td align="center">3.3 V logic-power distribution</td></tr>
+    <tr><td align="center">Bottom layer</td><td align="center">ADC, fault latch, temperature sensing, and overcurrent/overvoltage shutdown circuits</td></tr>
+  </tbody>
+</table>
+</div>
 
 ### 7.1 Power and Control Regions
 
@@ -531,9 +558,9 @@ Test pads with a diameter of 1 mm are provided on the board. After the first boa
 
 ### 8.1 Outer Voltage Loop and Inner Current Loop
 
-![Figure 2 Cascaded voltage–current control and supervisory modulation](assets/diagrams/fig03-cascaded-control.svg)
+<p align="center"><img src="assets/diagrams/fig03-cascaded-control.svg" alt="Figure 2 Cascaded voltage–current control and supervisory modulation"></p>
 
-Figure 2 Cascaded voltage–current control and supervisory modulation
+<p align="center">Figure 2 Cascaded voltage–current control and supervisory modulation</p>
 
 The diagram shows A-to-B operation with port B voltage regulated. The soft-started voltage reference is compared with feedback; PI (Voltage) produces a current reference, which is limited before PI (I) generates the modulation control variable. Region selection supplies the operating-mode signal to duty mapping and PWM generation. CCM/DCM supervision and zero-current detection adjust light-load switching, while the hardware fault signal independently inhibits the drive.
 
@@ -543,9 +570,9 @@ The controller uses a dual-loop structure with an outer voltage loop and an inne
 
 ### 8.2 Buck and Boost Operating Regions
 
-![Figure 3 Bridge modulation in buck, transition, and boost regions, with the transition-region switching sequence](assets/diagrams/fig02-operating-regions.svg)
+<p align="center"><img src="assets/diagrams/fig02-operating-regions.svg" alt="Figure 3 Bridge modulation in buck, transition, and boost regions, with the transition-region switching sequence"></p>
 
-Figure 3 Bridge modulation in buck, transition, and boost regions, with the transition-region switching sequence
+<p align="center">Figure 3 Bridge modulation in buck, transition, and boost regions, with the transition-region switching sequence</p>
 
 The upper panels compare the three operating regions for A-to-B power transfer in ideal CCM steady state. In buck operation, bridge A is modulated and Q3 remains on; in boost operation, bridge B is modulated and Q1 remains on. Both bridges are modulated in the transition region. Here <span>d<sub>1</sub></span> and <span>d<sub>3</sub></span> are the high-side ON duty ratios of Q1 and Q3, so <span>d<sub>1</sub>=D<sub>buck</sub></span> and <span>d<sub>3</sub>=1-D<sub>boost</sub></span> in the transition region.
 
@@ -575,11 +602,20 @@ The buck and boost cases above are straightforward: when the voltage difference 
 
 The transition region uses dual-duty-cycle control (the fixed duty-cycle difference method, U.S. Patent US 7,804,283 B2), defining <span>D<sub>buck</sub></span> and <span>D<sub>boost</sub></span>. Taking A→B as an example, there are actually only three main states in a switching cycle:
 
-| **State** | **Conducting Devices** | **Inductor Voltage** | **Duration** |
-|----------|--------------|-------------------|------------------------------------------------------------|
-| Energy storage | Q1 + Q4 | <span>V<sub>A</sub></span> | <span>D<sub>boost</sub>T<sub>s</sub></span> |
-| Energy transfer | Q1 + Q3 | <span>V<sub>A</sub> - V<sub>B</sub></span> | <span>( D<sub>buck</sub> - D<sub>boost</sub> )T<sub>s</sub></span> |
-| Freewheeling | Q2 + Q3 | <span>- V<sub>B</sub></span> | <span>( 1 - D<sub>buck</sub> )T<sub>s</sub></span> |
+<p align="center">Table 4 Transition-region switching states and inductor voltages</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>State</strong></th><th align="center"><strong>Conducting Devices</strong></th><th align="center"><strong>Inductor Voltage</strong></th><th align="center"><strong>Duration</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Energy storage</td><td align="center">Q1 + Q4</td><td align="center"><span>V<sub>A</sub></span></td><td align="center"><span>D<sub>boost</sub>T<sub>s</sub></span></td></tr>
+    <tr><td align="center">Energy transfer</td><td align="center">Q1 + Q3</td><td align="center"><span>V<sub>A</sub> - V<sub>B</sub></span></td><td align="center"><span>( D<sub>buck</sub> - D<sub>boost</sub> )T<sub>s</sub></span></td></tr>
+    <tr><td align="center">Freewheeling</td><td align="center">Q2 + Q3</td><td align="center"><span>- V<sub>B</sub></span></td><td align="center"><span>( 1 - D<sub>buck</sub> )T<sub>s</sub></span></td></tr>
+  </tbody>
+</table>
+</div>
 
 The durations of the three states add up to exactly one switching cycle. Applying inductor volt-second balance gives
 
@@ -643,12 +679,21 @@ when <span>V<sub>A</sub></span> is clearly lower than <span>V<sub>B</sub></span>
 
 I did not set identical entry and exit thresholds, leaving 1% hysteresis:
 
-| **Current State** | **Transition Condition** | **Next State** |
-|------------------|-----------------------------|------------------|
-| Bridge A at high frequency, bridge B on | <span>ε ≤ + 10%</span> | Transition region |
-| Transition region | <span>ε ≥ + 11%</span> | Bridge A at high frequency, bridge B on |
-| Bridge B at high frequency, bridge A on | <span>ε ≥ - 10%</span> | Transition region |
-| Transition region | <span>ε ≤ - 11%</span> | Bridge B at high frequency, bridge A on |
+<p align="center">Table 5 Operating-region transition conditions</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>Current State</strong></th><th align="center"><strong>Transition Condition</strong></th><th align="center"><strong>Next State</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Bridge A at high frequency, bridge B on</td><td align="center"><span>ε ≤ + 10%</span></td><td align="center">Transition region</td></tr>
+    <tr><td align="center">Transition region</td><td align="center"><span>ε ≥ + 11%</span></td><td align="center">Bridge A at high frequency, bridge B on</td></tr>
+    <tr><td align="center">Bridge B at high frequency, bridge A on</td><td align="center"><span>ε ≥ - 10%</span></td><td align="center">Transition region</td></tr>
+    <tr><td align="center">Transition region</td><td align="center"><span>ε ≤ - 11%</span></td><td align="center">Bridge B at high frequency, bridge A on</td></tr>
+  </tbody>
+</table>
+</div>
 
 This 1% difference mainly prevents the state machine from repeatedly switching between buck and the transition region, or between boost and the transition region, when <span>V<sub>A</sub></span> and <span>V<sub>B</sub></span> have ripple or sensing noise near a boundary.
 
@@ -660,11 +705,20 @@ The 200 ns value is the controller's design setting. Final verification must use
 
 The table below gives the basic modulation relationships for the A→B direction. For B→A, step-up or step-down operation must be determined again from the actual input and output voltages. The physical bridge leg used for high-frequency modulation still follows the voltage-region rules in Section 8.4. The held-on states in the table apply to normal energy transfer; zero-current intervals at light load are handled separately by the DCM strategy.
 
-| **Operating Region** | **High-Frequency Modulated Bridge Leg** | **Devices Held On** | **Description** |
-|------------|------------------|------------------|----------------------|
-| Buck | Bridge A, Q1 Q2 | B-side high-side MOSFET Q3 | Port A higher than port B |
-| Transition region | Bridges A and B | Neither side permanently held on | Both sides use coordinated dual duty cycles |
-| Boost | Bridge B, Q3 Q4 | A-side high-side MOSFET Q1 | Port A lower than port B |
+<p align="center">Table 6 Bridge modulation for A-to-B power transfer</p>
+
+<div align="center">
+<table align="center">
+  <thead>
+    <tr><th align="center"><strong>Operating Region</strong></th><th align="center"><strong>High-Frequency Modulated Bridge Leg</strong></th><th align="center"><strong>Devices Held On</strong></th><th align="center"><strong>Description</strong></th></tr>
+  </thead>
+  <tbody>
+    <tr><td align="center">Buck</td><td align="center">Bridge A, Q1 Q2</td><td align="center">B-side high-side MOSFET Q3</td><td align="center">Port A higher than port B</td></tr>
+    <tr><td align="center">Transition region</td><td align="center">Bridges A and B</td><td align="center">Neither side permanently held on</td><td align="center">Both sides use coordinated dual duty cycles</td></tr>
+    <tr><td align="center">Boost</td><td align="center">Bridge B, Q3 Q4</td><td align="center">A-side high-side MOSFET Q1</td><td align="center">Port A lower than port B</td></tr>
+  </tbody>
+</table>
+</div>
 
 ### 8.6 CCM and DCM
 
@@ -678,9 +732,9 @@ Discontinuous-current intervals have appeared in light-load simulation, but smal
 
 ### 9.1 Simulation Model
 
-![PSIM simulation model of the four-switch bidirectional buck-boost converter](assets/design-report/psim-model.png)
+<p align="center"><img src="assets/design-report/psim-model.png" alt="PSIM simulation model of the four-switch bidirectional buck-boost converter"></p>
 
-Figure 4 PSIM simulation model of the four-switch bidirectional buck-boost converter
+<p align="center">Figure 4 PSIM simulation model of the four-switch bidirectional buck-boost converter</p>
 
 The first stage uses ideal MOSFET and inductor models to verify bidirectional power flow, steady-state parameters, and the correctness of the power-stage topology.
 
@@ -688,57 +742,57 @@ The second stage adds Level 2 MOSFET models, a Level 1 inductor model, 12 V gate
 
 ### 9.2 Forward Power-Flow Mode Transitions
 
-![Bus-voltage response as port A voltage transitions through 30 V, 24 V, and 18 V](assets/design-report/forward-voltage-transition.png)
+<p align="center"><img src="assets/design-report/forward-voltage-transition.png" alt="Bus-voltage response as port A voltage transitions through 30 V, 24 V, and 18 V"></p>
 
-Figure 5 Bus-voltage responses at both ports as port A changes through 30 V, 24 V, and 18 V
+<p align="center">Figure 5 Bus-voltage responses at both ports as port A changes through 30 V, 24 V, and 18 V</p>
 
 This figure includes startup and operating-point transitions. Port B reaches a minimum of approximately 11 V in the early portion, so the figure illustrates the controller's operation across buck, the transition region, and boost. Startup, input-step, and steady-state windows will be presented separately later.
 
 ### 9.3 Inductor-Current Dynamic Response
 
-![Inductor-current dynamic response under combined forward operating conditions](assets/design-report/inductor-current-transient.png)
+<p align="center"><img src="assets/design-report/inductor-current-transient.png" alt="Inductor-current dynamic response under combined forward operating conditions"></p>
 
-Figure 6 Inductor-current dynamic response under combined forward operating conditions
+<p align="center">Figure 6 Inductor-current dynamic response under combined forward operating conditions</p>
 
 Inductor current changes with input voltage, load, and operating region. Significant transient peaks occur during transitions. The current results mainly demonstrate continuous operation of the state machine and power-flow direction; peak current and recovery time still need to be quantified separately in waveforms for individual operating conditions.
 
 ### 9.4 Heavy-Load CCM Inductor Current
 
-![Heavy-load CCM inductor current](assets/design-report/ccm-inductor-current.png)
+<p align="center"><img src="assets/design-report/ccm-inductor-current.png" alt="Heavy-load CCM inductor current"></p>
 
-Figure 7 Heavy-load CCM steady-state inductor current
+<p align="center">Figure 7 Heavy-load CCM steady-state inductor current</p>
 
 The inductor current remains continuous within the selected steady-state window, with a peak-to-peak value of approximately 1.4 A, broadly consistent with the theoretical ripple check for the 33 µH inductor.
 
 ### 9.5 Light-Load DCM Inductor Current
 
-![Light-load DCM inductor current](assets/design-report/dcm-inductor-current.png)
+<p align="center"><img src="assets/design-report/dcm-inductor-current.png" alt="Light-load DCM inductor current"></p>
 
-Figure 8 Light-load DCM inductor current
+<p align="center">Figure 8 Light-load DCM inductor current</p>
 
 Zero-current intervals are already present, but small negative oscillations remain after zero crossing. This waveform is therefore only an interim DCM result; the ZCD threshold, mode-exit conditions, and synchronous-MOSFET turn-off timing still need further optimization.
 
 ### 9.6 Reverse 24 V to 30 V Boost
 
-![Reverse 24 V to 30 V boost response](assets/design-report/reverse-boost-24-to-30.png)
+<p align="center"><img src="assets/design-report/reverse-boost-24-to-30.png" alt="Reverse 24 V to 30 V boost response"></p>
 
-Figure 9 24 V to 30 V boost response during power transfer from port B to port A
+<p align="center">Figure 9 24 V to 30 V boost response during power transfer from port B to port A</p>
 
 In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 30 V. In the figure, VBUS_A (green) and VBUS_B (red) are the two bus voltages in V; iL (blue) is the inductor current, while I_CONNECTOR_A (light orange) and I_CONNECTOR_B (orange) are the two port currents in A. The horizontal axis is time. Inductor current is defined as positive from A→B, so iL is negative during reverse power transfer. The waveforms show port A voltage recovering to approximately 30 V after a transient. The actual bus voltage at port B is given by the red curve.
 
 ### 9.7 Reverse 24 V to 18 V Buck
 
-![Reverse 24 V to 18 V buck response](assets/design-report/reverse-buck-24-to-18.png)
+<p align="center"><img src="assets/design-report/reverse-buck-24-to-18.png" alt="Reverse 24 V to 18 V buck response"></p>
 
-Figure 10 24 V to 18 V buck response during power transfer from port B to port A
+<p align="center">Figure 10 24 V to 18 V buck response during power transfer from port B to port A</p>
 
 In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 18 V. Curve names, units, and the positive inductor-current direction are the same as in Figure 9. Port A voltage initially drops to approximately 10 V and then recovers to approximately 18 V; negative inductor current corresponds to B→A energy transfer. This figure therefore illustrates the reverse buck dynamic process.
 
 ### 9.8 Gate-to-Source Voltages of the Four MOSFETs
 
-![VGS waveforms of Q1 Q2 Q3 Q4](assets/design-report/mosfet-gate-voltages.png)
+<p align="center"><img src="assets/design-report/mosfet-gate-voltages.png" alt="VGS waveforms of Q1 Q2 Q3 Q4"></p>
 
-Figure 11 VGS waveforms of Q1 Q2 Q3 Q4
+<p align="center">Figure 11 VGS waveforms of Q1 Q2 Q3 Q4</p>
 
 The figure shows the four PWM signals and gate-drive timing. Measurement of the 200 ns dead time will use an expanded time axis around the switching edges and probe the MOSFET pins on the actual board.
 
@@ -746,21 +800,21 @@ The figure shows the four PWM signals and gate-drive timing. Measurement of the 
 
 ### 10.1 First-Board Status
 
-![Front of the bare main power PCB](assets/design-report/power-board-front.jpeg)
+<p align="center"><img src="assets/design-report/power-board-front.jpeg" alt="Front of the bare main power PCB"></p>
 
-![Back of the bare main power PCB](assets/design-report/power-board-back.jpeg)
+<p align="center"><img src="assets/design-report/power-board-back.jpeg" alt="Back of the bare main power PCB"></p>
 
-Figure 12 Front and back of the bare main power PCB
+<p align="center">Figure 12 Front and back of the bare main power PCB</p>
 
 A two-layer MCU daughterboard was also designed to connect the controller to the main power board, with expansion control and OLED display interfaces reserved. It can later display power-flow direction, efficiency, fault status, and key measured quantities. Both the main power board and the daughterboard are currently bare PCBs; component assembly and power-up have not yet been completed.
 
-![MCU daughterboard and control board](assets/design-report/controller-boards.jpeg)
+<p align="center"><img src="assets/design-report/controller-boards.jpeg" alt="MCU daughterboard and control board"></p>
 
-![MCU daughterboard and OLED](assets/design-report/controller-oled.jpeg)
+<p align="center"><img src="assets/design-report/controller-oled.jpeg" alt="MCU daughterboard and OLED"></p>
 
-![MCU daughterboard assembly view](assets/design-report/controller-assembly.jpeg)
+<p align="center"><img src="assets/design-report/controller-assembly.jpeg" alt="MCU daughterboard assembly view"></p>
 
-Figure 13 MCU daughterboard and OLED mounting arrangement
+<p align="center">Figure 13 MCU daughterboard and OLED mounting arrangement</p>
 
 ### 10.2 First Power-Up Sequence
 
