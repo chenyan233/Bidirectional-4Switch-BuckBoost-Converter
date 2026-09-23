@@ -77,13 +77,13 @@ The basic design specifications are as follows:
 | Port B voltage | 24 V nominal control operating point |
 | Power direction | Bidirectional |
 | Switching frequency | 100 kHz |
-| Design current ripple ratio | $r = 0.4$ |
+| Design current ripple ratio | <span>r = 0.4</span> |
 | Rated-load operation | CCM |
 | Light-load operation | DCM (control strategy still being optimized) |
 | Target efficiency | 98.5% (design target, pending measurement) |
 | Output voltage ripple target | ≤0.5% (first-board target; 0.1% is a stretch target) |
 
-The 24 V at port B is the nominal operating point for the current control design and simulations; it does not mean that the topology can operate only at that voltage. The four-switch bidirectional buck-boost topology allows both ports A and B to act as input or output within the component ratings, protection thresholds, and control range. In this project, port B is fixed at 24 V mainly to represent operation on the side connected to a 24 V battery or a low-voltage DC bus.
+The 24 V at port B is the nominal operating point for the current control design and simulations. The four-switch bidirectional buck-boost topology allows both ports A and B to act as input or output within the component ratings, protection thresholds, and control range. In this project, port B is fixed at 24 V mainly to represent operation on the side connected to a 24 V battery or a low-voltage DC bus.
 
 ## 3 Power Stage Design
 
@@ -91,7 +91,7 @@ The 24 V at port B is the nominal operating point for the current control design
 
 Figure 1 Four-switch bidirectional buck-boost power stage and control, sensing, and protection architecture
 
-The upper panel shows the two half bridges, the 33 µH main inductor, and the series current shunt. Inductor current is defined as positive from A to B. The lower panel separates the STM32 control loops, PWM hardware gating, HIP4081AIBZ gate driver, and voltage and current sensing. Overcurrent and overvoltage comparators feed the fault latch and hardware shutdown path without waiting for a software-loop response. Switches are represented by idealized symbols; port protection, body diodes, and auxiliary supplies are not expanded.
+The upper panel shows the two half bridges, the 33 µH main inductor, and the series current shunt. Inductor current is defined as positive from A to B. The lower panel separates the STM32 control loops, PWM hardware gating, HIP4081AIBZ gate driver, and voltage and current sensing. Overcurrent and overvoltage comparators feed the fault latch and hardware shutdown path without waiting for a software-loop response.
 
 ### 3.1 Main Power Inductor Design
 
@@ -228,7 +228,7 @@ The calculation above ignores ESR, ESL, manufacturing tolerance, temperature, an
 
 Both sides ultimately use 2 × 220 µF / 50 V aluminum electrolytic capacitors, with a 10 µF / 50 V X7R capacitor, a 10 µF ceramic capacitor, and a 100 nF high-frequency ceramic capacitor in parallel. The larger capacitors mainly support low-frequency and transient demands, while the smaller capacitors reduce high-frequency impedance.
 
-The nominal capacitance of 2 × 220 µF is only slightly above the ideal 434 µF lower limit, and this alone cannot demonstrate that 0.1% ripple has been achieved. The first board uses ≤0.5% as the acceptance target, with 0.1% retained as a direction for later optimization.
+The nominal capacitance of 2 × 220 µF is only slightly above the ideal 434 µF lower limit. The first board uses ≤0.5% as the acceptance target, with 0.1% retained as a direction for later optimization.
 
 The capacitor bank's ripple current capability also needs to satisfy
 
@@ -250,7 +250,7 @@ $$
 P_{MOSFET} \approx P_{cond} + P_{sw} + P_{oss} + P_{rr}
 $$
 
-Main power MOSFET selection cannot be based only on voltage rating and $R_{DS(on)}$. It also needs to consider conduction losses, switching losses, gate-drive losses, output capacitance losses, reverse recovery, thermal performance, and safe operating area (SOA).
+Main power MOSFET selection considers voltage rating, <span>R<sub>DS(on)</sub></span>, conduction losses, switching losses, gate-drive losses, output capacitance losses, reverse recovery, thermal performance, and safe operating area (SOA).
 
 #### 3.3.1 Conduction Losses
 
@@ -260,7 +260,7 @@ $$
 P_{cond} = I_{RMS}^{2}R_{DS(on)}
 $$
 
-The actual design must also account for the increase in $R_{DS(on)}$ as temperature rises.
+The actual design must also account for the increase in <span>R<sub>DS(on)</sub></span> as temperature rises.
 
 #### 3.3.2 Switching Losses
 
@@ -284,7 +284,7 @@ $$
 
 This portion is mainly included in the gate-driver power budget.
 
-In addition to total gate charge $Q_{g}$, I found that $Q_{gd}$ is closely related to the Miller interval. It affects the MOSFET's VDS transition speed and actual switching time, which in turn affects switching losses and the driver's required current capability.
+In addition to total gate charge <span>Q<sub>g</sub></span>, I found that <span>Q<sub>gd</sub></span> is closely related to the Miller interval. It affects the MOSFET's VDS transition speed and actual switching time, which in turn affects switching losses and the driver's required current capability.
 
 #### 3.3.4 Output Capacitance Losses
 
@@ -294,19 +294,19 @@ $$
 P_{oss} \approx \frac{1}{2}C_{oss}V_{DS}^{2}f_{s}
 $$
 
-However, the actual $C_{oss}$ is not constant; it changes significantly with $V_{DS}$. I therefore look for the $E_{oss}$ data provided in the datasheet and calculate using $P_{oss} \approx E_{oss}f_{s}$, which more closely represents the MOSFET's actual switching process.
+However, the actual <span>C<sub>oss</sub></span> is not constant; it changes significantly with <span>V<sub>DS</sub></span>. I therefore look for the <span>E<sub>oss</sub></span> data provided in the datasheet and calculate using <span>P<sub>oss</sub> ≈ E<sub>oss</sub>f<sub>s</sub></span>, which more closely represents the MOSFET's actual switching process.
 
 #### 3.3.5 Reverse Recovery
 
-During dead time in a synchronous buck-boost converter, inductor current still needs a freewheeling path, and a MOSFET body diode may briefly conduct. When the other MOSFET turns on again, the charge stored in the body diode must first be removed, so reverse recovery charge $Q_{rr}$ also directly participates in the switching process.
+During dead time in a synchronous buck-boost converter, inductor current still needs a freewheeling path, and a MOSFET body diode may briefly conduct. When the other MOSFET turns on again, the charge stored in the body diode must first be removed, so reverse recovery charge <span>Q<sub>rr</sub></span> also directly participates in the switching process.
 
-If $Q_{rr}$ is large, a more pronounced reverse recovery current spike appears during commutation. This not only increases switching losses but also further excites parasitic effects in the power loop, resulting in more severe ringing, transient MOSFET stress, and EMI.
+If <span>Q<sub>rr</sub></span> is large, a more pronounced reverse recovery current spike appears during commutation. This not only increases switching losses but also further excites parasitic effects in the power loop, resulting in more severe ringing, transient MOSFET stress, and EMI.
 
-Therefore, my final MOSFET selection did not look only at $R_{DS(on)}$. I compared $V_{DS}$, $R_{DS(on)}$, $Q_{g}$, $C_{iss}$, $C_{oss}$, and $Q_{rr}$ together, while also checking pulse current capability, SOA, thermal performance, and the package's own parasitics. Many of these parameters involve trade-offs. For example, very low on-resistance often comes with higher gate charge and junction capacitance, so the final decision still has to take this board's voltage, power, and 100 kHz switching frequency into account.
+Therefore, my final MOSFET selection did not look only at <span>R<sub>DS(on)</sub></span>. I compared <span>V<sub>DS</sub></span>, <span>R<sub>DS(on)</sub></span>, <span>Q<sub>g</sub></span>, <span>C<sub>iss</sub></span>, <span>C<sub>oss</sub></span>, and <span>Q<sub>rr</sub></span> together, while also checking pulse current capability, SOA, thermal performance, and the package's own parasitics. Many of these parameters involve trade-offs. For example, very low on-resistance often comes with higher gate charge and junction capacitance, so the final decision still has to take this board's voltage, power, and 100 kHz switching frequency into account.
 
 ### 3.4 MOSFET Voltage Rating
 
-The main power MOSFETs were not selected right at the 30 V steady-state upper limit; instead, I used 60 V devices. This provides steady-state voltage margin relative to the normal 18–30 V range. However, early PSIM mode transitions produced transients of 40–50 V or even higher, so the rated voltage alone cannot establish that the transient margin is sufficient. VDS overshoot needs to be measured on the actual board, and the peaks kept within a reliable range through layout, gate resistance, and RC snubbers.
+The main power MOSFETs were not selected right at the 30 V steady-state upper limit; instead, I used 60 V devices. This provides steady-state voltage margin relative to the normal 18–30 V range. However, early PSIM mode transitions produced transients of 40–50 V or even higher. VDS overshoot needs to be measured on the actual board, and the peaks kept within a reliable range through layout, gate resistance, and RC snubbers.
 
 I ultimately selected:
 
@@ -320,9 +320,9 @@ for the four main power N-channel MOSFETs.
 
 For switching ringing, I did not intend to fix the component values at the schematic stage, because ringing is determined by more than the MOSFET itself. Power-loop parasitic inductance, device packages, capacitor ESL, gate resistance, and actual operating current all play a part. Many of these are difficult to calculate accurately before the board is built, so I reserved RC snubber footprints near all four MOSFETs, using 2010 resistors and 0802 capacitors. All are initially DNP on the first board.
 
-Once the board arrives, I will directly measure the MOSFET $V_{DS}$ waveforms to examine the actual overshoot amplitude, ringing frequency, and decay rate, while also checking for significant changes under different loads and buck or boost conditions. The final $R_{snub}$ and $C_{snub}$ will then be determined from these measurements.
+Once the board arrives, I will directly measure the MOSFET <span>V<sub>DS</sub></span> waveforms to examine the actual overshoot amplitude, ringing frequency, and decay rate, while also checking for significant changes under different loads and buck or boost conditions. The final <span>R<sub>snub</sub></span> and <span>C<sub>snub</sub></span> will then be determined from these measurements.
 
-RC snubbers introduce additional losses, usually dominated by the capacitor's charging and discharging energy each cycle, while the resistor mainly determines damping and peak current. It is not enough to assume that larger values simply mean greater losses; the two values should be tuned together based on the measured ringing frequency and decay. The order of magnitude of the losses can be estimated initially using:
+RC snubbers introduce additional losses, usually dominated by the capacitor's charging and discharging energy each cycle, while the resistor mainly determines damping and peak current. The resistor and capacitor values are tuned together based on the measured ringing frequency and decay. The order of magnitude of the losses can be estimated initially using:
 
 $$
 P_{snub} \sim CV^{2}f_{s}
@@ -336,7 +336,7 @@ After settling on the MOSFETs, the next task was driving the four N-channel devi
 
 I initially selected the MP6528. It is designed to drive four N-channel MOSFETs in two half-bridges, which closely matches the power-stage structure of a four-switch buck-boost converter.
 
-At the time, I valued its built-in VREG of approximately 11.5 V. This allows the gate-drive supply to be provided internally without a separate 12 V drive supply, while a $V_{GS}$ of approximately 10–12 V also suits the CSD18540Q5B. The high-side driver also has an auxiliary charging mechanism that is more favorable for high-duty-cycle operation, and dead time can be adjusted using external components.
+At the time, I valued its built-in VREG of approximately 11.5 V. This allows the gate-drive supply to be provided internally without a separate 12 V drive supply, while a <span>V<sub>GS</sub></span> of approximately 10–12 V also suits the CSD18540Q5B. The high-side driver also has an auxiliary charging mechanism that is more favorable for high-duty-cycle operation, and dead time can be adjusted using external components.
 
 ### 4.2 Changing to HIP4081AIBZ
 
@@ -360,7 +360,7 @@ Because closed-loop current control will be implemented later, the accuracy of i
 
 I therefore selected a current shunt with a four-pad structure for direct Kelvin sensing. The power current flows through the Force terminals, while the Sense terminals separately bring out the voltage from the two ends of the shunt body, minimizing the inclusion of high-current copper and pad contact resistance in the measurement.
 
-Ideally, the sensing relationship is simply Ohm's law: $V_{shunt} = I_{L}R_{shunt}$.
+Ideally, the sensing relationship is simply Ohm's law: <span>V<sub>shunt</sub> = I<sub>L</sub>R<sub>shunt</sub></span>.
 
 This can improve sensing-signal integrity and accuracy and also clarify the PCB current paths: the main current flows along the power path, while the two Kelvin Sense traces run from independent sensing points to the current-sense amplifier without sharing pickup locations with the power copper.
 
@@ -458,7 +458,7 @@ The 3.3 V logic supply passes through a ferrite bead at the interface and has lo
 
 This board does not indiscriminately mix all return paths on the same copper area. Instead, they are divided by function into PGND, DRV_GND, and GND. PGND carries the high-current return of the main power circuit, DRV_GND serves the 12 V gate drive, and the remaining sensing, logic, and control signals use GND as their reference.
 
-On the PCB, the main power components are primarily on the top layer, with PGND directly beneath the power region. This brings the outgoing and return paths of switching current closer together to reduce high-$di/dt$ loop area and parasitic inductance. PGND covers approximately the upper half of the board, but I did not extend it into the control and sensing areas merely to maximize copper coverage. In particular, I kept it away from the PWM enable logic and Kelvin Sense area to prevent power return current from passing beneath these sensitive signals.
+On the PCB, the main power components are primarily on the top layer, with PGND directly beneath the power region. This brings the outgoing and return paths of switching current closer together to reduce high-<span>di/dt</span> loop area and parasitic inductance. PGND covers approximately the upper half of the board, but I did not extend it into the control and sensing areas merely to maximize copper coverage. In particular, I kept it away from the PWM enable logic and Kelvin Sense area to prevent power return current from passing beneath these sensitive signals.
 
 Layer 4 GND covers essentially the entire PCB, providing a reference for control, sensing, and other small signals. DRV_GND is mainly on the top layer and parts of the bottom layer, connected to GND through wide copper. Because Layer 4 still exists beneath some power regions, capacitive coupling from switching nodes into the reference plane and common-mode noise need particular attention on the first board.
 
@@ -489,7 +489,7 @@ The main power board uses a six-layer structure. Power components are mainly on 
 
 The PCB layout can broadly be divided into upper and lower sections. The upper section mainly contains the power stage, with MOSFETs, the inductor, power capacitors, reverse-polarity protection, and drive circuits concentrated there. The lower section mainly contains the ADC, protection logic, interfaces, and other small-signal circuits.
 
-The main purpose of this division is to avoid mixing high-$di/dt$, high-$dv/dt$ switching regions with weak sensing signals.
+The main purpose of this division is to avoid mixing high-<span>di/dt</span>, high-<span>dv/dt</span> switching regions with weak sensing signals.
 
 The top-layer main power networks use copper pours, with high-frequency current loops kept as short as possible. SW_A and SW_B must balance current capacity and parasitic capacitance: copper area is controlled while meeting current-density and temperature-rise requirements to reduce capacitive coupling into reference planes and common-mode EMI, rather than simply maximizing copper coverage.
 
@@ -499,7 +499,7 @@ The HIP4081AIBZ and corresponding gate traces are placed as close as possible to
 
 The gate resistors are placed near the MOSFETs. If board testing later shows excessively fast switching edges or significant ringing, switching speed can be changed directly by adjusting the gate resistors without redesigning the entire PCB.
 
-The RC snubbers follow the same approach: footprints are already reserved near the MOSFETs and are initially DNP on the first board. Their values will be decided after actual $V_{DS}$ ringing is measured.
+The RC snubbers follow the same approach: footprints are already reserved near the MOSFETs and are initially DNP on the first board. Their values will be decided after actual <span>V<sub>DS</sub></span> ringing is measured.
 
 ### 7.3 Kelvin and ADC Sensing
 
@@ -515,7 +515,7 @@ Voltage and temperature sensing are also concentrated in the control region, wit
 
 ### 7.4 Main Power-Stage Layout
 
-The main power stage is arranged largely along the energy path from port A through bridge A, the main inductor, and bridge B to port B. The four main MOSFETs are placed near their respective bridge legs to shorten the connections between switching nodes, the inductor, and bus capacitors, reducing high-$di/dt$ loop area and parasitic inductance.
+The main power stage is arranged largely along the energy path from port A through bridge A, the main inductor, and bridge B to port B. The four main MOSFETs are placed near their respective bridge legs to shorten the connections between switching nodes, the inductor, and bus capacitors, reducing high-<span>di/dt</span> loop area and parasitic inductance.
 
 The reverse-polarity protection MOSFETs and input/output capacitors at ports A and B are placed near the interfaces. External current passes through protection before entering the main power circuit. This avoids high-current detours on the board and places bus capacitors close to the bridge legs to supply local pulse current during MOSFET switching.
 
@@ -537,7 +537,7 @@ Figure 2 Cascaded voltage–current control and supervisory modulation
 
 The diagram shows A-to-B operation with port B voltage regulated. The soft-started voltage reference is compared with feedback; PI (Voltage) produces a current reference, which is limited before PI (I) generates the modulation control variable. Region selection supplies the operating-mode signal to duty mapping and PWM generation. CCM/DCM supervision and zero-current detection adjust light-load switching, while the hardware fault signal independently inhibits the drive.
 
-Hatted variables denote filtered measurements. Signals $e_v$ and $e_i$ are the voltage and current errors; $i_{L,raw}^{*}$ is the current reference before limiting; $m$ selects the operating region; $s_{DCM}$ controls the conduction mode; $EN$ denotes the illustrated hardware enable; and $g_{1\ldots4}$ denotes the four switching commands. Signal names are repeated at the sending and receiving ends to make the feedback paths easier to follow. Reverse operation requires regulation of port A voltage and consistent sign handling for the current reference and feedback. This is a functional control diagram, not a claim of completed firmware or hardware validation.
+Hatted variables denote filtered measurements. Signals <span>e<sub>v</sub></span> and <span>e<sub>i</sub></span> are the voltage and current errors; <span>i<sub>L,raw</sub><sup>*</sup></span> is the current reference before limiting; <span>m</span> selects the operating region; <span>s<sub>DCM</sub></span> controls the conduction mode; <span>EN</span> denotes the illustrated hardware enable; and <span>g<sub>1…4</sub></span> denotes the four switching commands. Signal names are repeated at the sending and receiving ends to make the feedback paths easier to follow. Reverse operation requires regulation of port A voltage and consistent sign handling for the current reference and feedback.
 
 The controller uses a dual-loop structure with an outer voltage loop and an inner current loop. In the current simulation, both loops update every 10 µs, corresponding to a control update frequency of 100 kHz. The target current-loop bandwidth is approximately 5 kHz, and the target voltage-loop bandwidth is approximately 500 Hz, a difference of approximately one order of magnitude. Soft start is also applied to the voltage reference to reduce transient current caused by a large difference between the reference and actual values during startup or mode transitions.
 
@@ -547,17 +547,17 @@ The controller uses a dual-loop structure with an outer voltage loop and an inne
 
 Figure 3 Bridge modulation in buck, transition, and boost regions, with the transition-region switching sequence
 
-The upper panels compare the three operating regions for A-to-B power transfer in ideal CCM steady state. In buck operation, bridge A is modulated and Q3 remains on; in boost operation, bridge B is modulated and Q1 remains on. Both bridges are modulated in the transition region. Here $d_1$ and $d_3$ are the high-side ON duty ratios of Q1 and Q3, so $d_1=D_{buck}$ and $d_3=1-D_{boost}$ in the transition region; $d_3$ must not be confused with $D_{boost}$.
+The upper panels compare the three operating regions for A-to-B power transfer in ideal CCM steady state. In buck operation, bridge A is modulated and Q3 remains on; in boost operation, bridge B is modulated and Q1 remains on. Both bridges are modulated in the transition region. Here <span>d<sub>1</sub></span> and <span>d<sub>3</sub></span> are the high-side ON duty ratios of Q1 and Q3, so <span>d<sub>1</sub>=D<sub>buck</sub></span> and <span>d<sub>3</sub>=1-D<sub>boost</sub></span> in the transition region.
 
 The lower panel gives the three conducting-device combinations, their inductor voltages, and their durations within one switching period. Applying inductor volt-second balance to these intervals gives the voltage-ratio and fixed duty-difference relationships shown below the sequence.
 
-When power flows from port A to port B and $V_{A} > V_{B}$, the voltage must be stepped down, so the converter operates in the **buck region**. The A-side bridge leg is PWM-modulated to control how much energy the inductor absorbs each cycle; the B-side bridge leg mainly remains synchronously on to deliver inductor current to port B. Ideally, the duty cycle approximately satisfies
+When power flows from port A to port B and <span>V<sub>A</sub> &gt; V<sub>B</sub></span>, the voltage must be stepped down, so the converter operates in the **buck region**. The A-side bridge leg is PWM-modulated to control how much energy the inductor absorbs each cycle; the B-side bridge leg mainly remains synchronously on to deliver inductor current to port B. Ideally, the duty cycle approximately satisfies
 
 $$
 D_{\text{Buck}} \approx \frac{V_{B}}{V_{A}}
 $$
 
-When $V_{A} < V_{B}$, the voltage at port A must be stepped up before being delivered to port B, so the converter enters the **boost region**. The A side mainly remains on, while the B-side bridge leg is PWM-modulated, using the inductor's energy storage and release to step up the voltage. The ideal boost relationship is
+When <span>V<sub>A</sub> &lt; V<sub>B</sub></span>, the voltage at port A must be stepped up before being delivered to port B, so the converter enters the **boost region**. The A side mainly remains on, while the B-side bridge leg is PWM-modulated, using the inductor's energy storage and release to step up the voltage. The ideal boost relationship is
 
 $$
 D_{\text{Boost}} \approx 1 - \frac{V_{A}}{V_{B}}
@@ -567,19 +567,19 @@ When power reverses, the input and output roles swap, but the physical bridge le
 
 A single mode cannot simply be fixed here. If buck is always used, step-up capability is lost once the input voltage falls below the output voltage; always using boost is likewise unsuitable when the input voltage exceeds the output voltage. In theory, all four MOSFETs could participate in high-frequency modulation under every operating condition, but this increases switching losses, gate-drive losses, and EMI, offering no efficiency benefit.
 
-My approach is therefore to use buck or boost when the voltage difference is clear, with one bridge leg switching at high frequency and the other kept on as much as possible. When $V_{A}$ and $V_{B}$ are close, the converter enters the four-switch buck-boost transition region, where both sides are modulated. This covers the full step-up and step-down range while reducing unnecessary high-frequency switching.
+My approach is therefore to use buck or boost when the voltage difference is clear, with one bridge leg switching at high frequency and the other kept on as much as possible. When <span>V<sub>A</sub></span> and <span>V<sub>B</sub></span> are close, the converter enters the four-switch buck-boost transition region, where both sides are modulated. This covers the full step-up and step-down range while reducing unnecessary high-frequency switching.
 
 ### 8.3 Buck-Boost Transition Region and Dual-Duty-Cycle Modulation
 
-The buck and boost cases above are straightforward: when the voltage difference is large, only one bridge leg needs high-frequency PWM while the other remains on. However, when $V_{A}$ and $V_{B}$ are very close, switching directly from buck to boost would abruptly change the operating states of all four MOSFETs and cause a duty-cycle jump. I therefore introduced a separate buck-boost transition region instead of switching modes directly near $V_{A} = V_{B}$.
+The buck and boost cases above are straightforward: when the voltage difference is large, only one bridge leg needs high-frequency PWM while the other remains on. However, when <span>V<sub>A</sub></span> and <span>V<sub>B</sub></span> are very close, switching directly from buck to boost would abruptly change the operating states of all four MOSFETs and cause a duty-cycle jump. I therefore introduced a separate buck-boost transition region instead of switching modes directly near <span>V<sub>A</sub> = V<sub>B</sub></span>.
 
-The transition region uses dual-duty-cycle control (the fixed duty-cycle difference method, U.S. Patent US 7,804,283 B2), defining $D_{\text{buck}}$ and $D_{\text{boost}}$. Taking A→B as an example, there are actually only three main states in a switching cycle:
+The transition region uses dual-duty-cycle control (the fixed duty-cycle difference method, U.S. Patent US 7,804,283 B2), defining <span>D<sub>buck</sub></span> and <span>D<sub>boost</sub></span>. Taking A→B as an example, there are actually only three main states in a switching cycle:
 
 | **State** | **Conducting Devices** | **Inductor Voltage** | **Duration** |
 |----------|--------------|-------------------|------------------------------------------------------------|
-| Energy storage | Q1 + Q4 | $V_{A}$ | $D_{\text{boost}}T_{s}$ |
-| Energy transfer | Q1 + Q3 | $V_{A} - V_{B}$ | $\left( D_{\text{buck}} - D_{\text{boost}} \right)T_{s}$ |
-| Freewheeling | Q2 + Q3 | $- V_{B}$ | $\left( 1 - D_{\text{buck}} \right)T_{s}$ |
+| Energy storage | Q1 + Q4 | <span>V<sub>A</sub></span> | <span>D<sub>boost</sub>T<sub>s</sub></span> |
+| Energy transfer | Q1 + Q3 | <span>V<sub>A</sub> - V<sub>B</sub></span> | <span>( D<sub>buck</sub> - D<sub>boost</sub> )T<sub>s</sub></span> |
+| Freewheeling | Q2 + Q3 | <span>- V<sub>B</sub></span> | <span>( 1 - D<sub>buck</sub> )T<sub>s</sub></span> |
 
 The durations of the three states add up to exactly one switching cycle. Applying inductor volt-second balance gives
 
@@ -625,7 +625,7 @@ $$
 0.85 - 0.15 = 0.70
 $$
 
-This fixed-difference relationship coordinates the duty cycles of the two bridge legs within the transition region. Entering or leaving this region still requires coordination of duty-cycle mapping, controller states, and PWM timing. A fixed difference and mode hysteresis alone cannot guarantee the absence of duty-cycle jumps or current transients during switching. The current transition behavior is shown in the simulation waveforms in Section 9.
+This fixed-difference relationship coordinates the duty cycles of the two bridge legs within the transition region. Entering or leaving this region still requires coordination of duty-cycle mapping, controller states, and PWM timing. This coordination reduces duty-cycle jumps and current transients during switching. The current transition behavior is shown in the simulation waveforms in Section 9.
 
 ### 8.4 Mode Transitions Between Buck, the Transition Region, and Boost
 
@@ -635,22 +635,22 @@ $$
 \varepsilon = \frac{V_{A} - V_{B}}{\max\left( V_{A},V_{B} \right)}
 $$
 
-When $V_{A}$ is clearly higher than $V_{B}$, bridge A is modulated at high frequency while bridge B remains on;
+When <span>V<sub>A</sub></span> is clearly higher than <span>V<sub>B</sub></span>, bridge A is modulated at high frequency while bridge B remains on;
 
 when the two port voltages are close, the converter enters the four-switch transition region;
 
-when $V_{A}$ is clearly lower than $V_{B}$, bridge B is modulated at high frequency while bridge A remains on.
+when <span>V<sub>A</sub></span> is clearly lower than <span>V<sub>B</sub></span>, bridge B is modulated at high frequency while bridge A remains on.
 
 I did not set identical entry and exit thresholds, leaving 1% hysteresis:
 
 | **Current State** | **Transition Condition** | **Next State** |
 |------------------|-----------------------------|------------------|
-| Bridge A at high frequency, bridge B on | $\varepsilon \leq + 10\%$ | Transition region |
-| Transition region | $\varepsilon \geq + 11\%$ | Bridge A at high frequency, bridge B on |
-| Bridge B at high frequency, bridge A on | $\varepsilon \geq - 10\%$ | Transition region |
-| Transition region | $\varepsilon \leq - 11\%$ | Bridge B at high frequency, bridge A on |
+| Bridge A at high frequency, bridge B on | <span>ε ≤ + 10%</span> | Transition region |
+| Transition region | <span>ε ≥ + 11%</span> | Bridge A at high frequency, bridge B on |
+| Bridge B at high frequency, bridge A on | <span>ε ≥ - 10%</span> | Transition region |
+| Transition region | <span>ε ≤ - 11%</span> | Bridge B at high frequency, bridge A on |
 
-This 1% difference mainly prevents the state machine from repeatedly switching between buck and the transition region, or between boost and the transition region, when $V_{A}$ and $V_{B}$ have ripple or sensing noise near a boundary.
+This 1% difference mainly prevents the state machine from repeatedly switching between buck and the transition region, or between boost and the transition region, when <span>V<sub>A</sub></span> and <span>V<sub>B</sub></span> have ripple or sensing noise near a boundary.
 
 ### 8.5 PWM and Dead Time
 
@@ -658,7 +658,7 @@ The STM32 generates four PWM signals according to the operating region and power
 
 The 200 ns value is the controller's design setting. Final verification must use VGS measured at the MOSFET pins, separately confirming the effective dead time from one device turning off to the next turning on.
 
-The table below gives the basic modulation relationships for the A→B direction. For B→A, step-up or step-down operation must be determined again from the actual input and output voltages. The physical bridge leg used for high-frequency modulation still follows the voltage-region rules in Section 8.4; bridges A and B cannot simply be swapped. The held-on states in the table apply to normal energy transfer; zero-current intervals at light load are handled separately by the DCM strategy.
+The table below gives the basic modulation relationships for the A→B direction. For B→A, step-up or step-down operation must be determined again from the actual input and output voltages. The physical bridge leg used for high-frequency modulation still follows the voltage-region rules in Section 8.4. The held-on states in the table apply to normal energy transfer; zero-current intervals at light load are handled separately by the DCM strategy.
 
 | **Operating Region** | **High-Frequency Modulated Bridge Leg** | **Devices Held On** | **Description** |
 |------------|------------------|------------------|----------------------|
@@ -672,7 +672,7 @@ Operation at rated load is mainly in CCM, while DCM is allowed at light load. Th
 
 The current design uses DCM entry and exit thresholds of approximately 1.5 A and 2.0 A, respectively, with the conditions required to persist for three switching cycles. The provisional zero-current detection threshold is 0.08 A.
 
-Discontinuous-current intervals have appeared in light-load simulation, but small reverse oscillations after zero crossing still need further optimization. This report therefore treats DCM as an interim result, rather than completed hardware verification.
+Discontinuous-current intervals have appeared in light-load simulation, but small reverse oscillations after zero crossing still need further optimization.
 
 ## 9 PSIM Simulation Verification
 
@@ -684,7 +684,7 @@ Figure 4 PSIM simulation model of the four-switch bidirectional buck-boost conve
 
 The first stage uses ideal MOSFET and inductor models to verify bidirectional power flow, steady-state parameters, and the correctness of the power-stage topology.
 
-The second stage adds Level 2 MOSFET models, a Level 1 inductor model, 12 V gate drive, full PWM, transition-region control, and the main capacitor parameters from the schematic. This model is used to identify control and device-stress issues in advance, but it still cannot replace PCB parasitic extraction and physical testing.
+The second stage adds Level 2 MOSFET models, a Level 1 inductor model, 12 V gate drive, full PWM, transition-region control, and the main capacitor parameters from the schematic. This model is used to identify control and device-stress issues in advance; PCB parasitic extraction and physical testing will support further model refinement.
 
 ### 9.2 Forward Power-Flow Mode Transitions
 
@@ -692,7 +692,7 @@ The second stage adds Level 2 MOSFET models, a Level 1 inductor model, 12 V gate
 
 Figure 5 Bus-voltage responses at both ports as port A changes through 30 V, 24 V, and 18 V
 
-This figure includes startup and operating-point transitions. Port B reaches a minimum of approximately 11 V in the early portion, so the figure illustrates the controller's operation across buck, the transition region, and boost; it is not evidence that final voltage-regulation performance has passed. Startup, input-step, and steady-state windows will be presented separately later.
+This figure includes startup and operating-point transitions. Port B reaches a minimum of approximately 11 V in the early portion, so the figure illustrates the controller's operation across buck, the transition region, and boost. Startup, input-step, and steady-state windows will be presented separately later.
 
 ### 9.3 Inductor-Current Dynamic Response
 
@@ -724,7 +724,7 @@ Zero-current intervals are already present, but small negative oscillations rema
 
 Figure 9 24 V to 30 V boost response during power transfer from port B to port A
 
-In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 30 V. In the figure, VBUS_A (green) and VBUS_B (red) are the two bus voltages in V; iL (blue) is the inductor current, while I_CONNECTOR_A (light orange) and I_CONNECTOR_B (orange) are the two port currents in A. The horizontal axis is time. Inductor current is defined as positive from A→B, so iL is negative during reverse power transfer. The waveforms show port A voltage recovering to approximately 30 V after a transient. The actual bus voltage at port B is given by the red curve; a nominal 24 V does not mean it remains at 24 V throughout the entire process.
+In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 30 V. In the figure, VBUS_A (green) and VBUS_B (red) are the two bus voltages in V; iL (blue) is the inductor current, while I_CONNECTOR_A (light orange) and I_CONNECTOR_B (orange) are the two port currents in A. The horizontal axis is time. Inductor current is defined as positive from A→B, so iL is negative during reverse power transfer. The waveforms show port A voltage recovering to approximately 30 V after a transient. The actual bus voltage at port B is given by the red curve.
 
 ### 9.7 Reverse 24 V to 18 V Buck
 
@@ -732,7 +732,7 @@ In this operating condition, port B supplies power to port A. Port B has a nomin
 
 Figure 10 24 V to 18 V buck response during power transfer from port B to port A
 
-In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 18 V. Curve names, units, and the positive inductor-current direction are the same as in Figure 9. Port A voltage initially drops to approximately 10 V and then recovers to approximately 18 V; negative inductor current corresponds to B→A energy transfer. This figure therefore illustrates the reverse buck dynamic process and cannot establish that voltage-regulation accuracy requirements have been met throughout the entire process.
+In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 18 V. Curve names, units, and the positive inductor-current direction are the same as in Figure 9. Port A voltage initially drops to approximately 10 V and then recovers to approximately 18 V; negative inductor current corresponds to B→A energy transfer. This figure therefore illustrates the reverse buck dynamic process.
 
 ### 9.8 Gate-to-Source Voltages of the Four MOSFETs
 
@@ -740,7 +740,7 @@ In this operating condition, port B supplies power to port A. Port B has a nomin
 
 Figure 11 VGS waveforms of Q1 Q2 Q3 Q4
 
-This time scale confirms that the four PWM signals and gate-drive logic can operate, but it is insufficient to verify the 200 ns dead time. The time axis must later be expanded around the switching edges, and effective dead time must be measured at the MOSFET pins on the actual board.
+The figure shows the four PWM signals and gate-drive timing. Measurement of the 200 ns dead time will use an expanded time axis around the switching edges and probe the MOSFET pins on the actual board.
 
 ## 10 First-Board Status and Test Plan
 
@@ -780,9 +780,9 @@ Figure 13 MCU daughterboard and OLED mounting arrangement
 
 ### 10.3 Initial Measurements
 
-- $V_{GS}$
+- <span>V<sub>GS</sub></span>
 
-- $V_{DS}$
+- <span>V<sub>DS</sub></span>
 
 - Dead Time
 
