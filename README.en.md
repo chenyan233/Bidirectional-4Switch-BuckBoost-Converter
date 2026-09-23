@@ -87,6 +87,12 @@ The 24 V at port B is the nominal operating point for the current control design
 
 ## 3 Power Stage Design
 
+![Figure 1 Four-switch bidirectional buck-boost power stage and control, sensing, and protection architecture](assets/diagrams/fig01-power-stage-architecture.svg)
+
+Figure 1 Four-switch bidirectional buck-boost power stage and control, sensing, and protection architecture
+
+The upper panel shows the two half bridges, the 33 µH main inductor, and the series current shunt. Inductor current is defined as positive from A to B. The lower panel separates the STM32 control loops, PWM hardware gating, HIP4081AIBZ gate driver, and voltage and current sensing. Overcurrent and overvoltage comparators feed the fault latch and hardware shutdown path without waiting for a software-loop response. Switches are represented by idealized symbols; port protection, body diodes, and auxiliary supplies are not expanded.
+
 ### 3.1 Main Power Inductor Design
 
 The main inductor is initially designed using the current ripple ratio
@@ -525,9 +531,25 @@ Test pads with a diameter of 1 mm are provided on the board. After the first boa
 
 ### 8.1 Outer Voltage Loop and Inner Current Loop
 
+![Figure 2 Cascaded voltage–current control and supervisory modulation](assets/diagrams/fig03-cascaded-control.svg)
+
+Figure 2 Cascaded voltage–current control and supervisory modulation
+
+The diagram shows A-to-B operation with port B voltage regulated. The soft-started voltage reference is compared with feedback; PI (Voltage) produces a current reference, which is limited before PI (I) generates the modulation control variable. Region selection supplies the operating-mode signal to duty mapping and PWM generation. CCM/DCM supervision and zero-current detection adjust light-load switching, while the hardware fault signal independently inhibits the drive.
+
+Hatted variables denote filtered measurements. Signals $e_v$ and $e_i$ are the voltage and current errors; $i_{L,raw}^{*}$ is the current reference before limiting; $m$ selects the operating region; $s_{DCM}$ controls the conduction mode; $EN$ denotes the illustrated hardware enable; and $g_{1\ldots4}$ denotes the four switching commands. Signal names are repeated at the sending and receiving ends to make the feedback paths easier to follow. Reverse operation requires regulation of port A voltage and consistent sign handling for the current reference and feedback. This is a functional control diagram, not a claim of completed firmware or hardware validation.
+
 The controller uses a dual-loop structure with an outer voltage loop and an inner current loop. In the current simulation, both loops update every 10 µs, corresponding to a control update frequency of 100 kHz. The target current-loop bandwidth is approximately 5 kHz, and the target voltage-loop bandwidth is approximately 500 Hz, a difference of approximately one order of magnitude. Soft start is also applied to the voltage reference to reduce transient current caused by a large difference between the reference and actual values during startup or mode transitions.
 
 ### 8.2 Buck and Boost Operating Regions
+
+![Figure 3 Bridge modulation in buck, transition, and boost regions, with the transition-region switching sequence](assets/diagrams/fig02-operating-regions.svg)
+
+Figure 3 Bridge modulation in buck, transition, and boost regions, with the transition-region switching sequence
+
+The upper panels compare the three operating regions for A-to-B power transfer in ideal CCM steady state. In buck operation, bridge A is modulated and Q3 remains on; in boost operation, bridge B is modulated and Q1 remains on. Both bridges are modulated in the transition region. Here $d_1$ and $d_3$ are the high-side ON duty ratios of Q1 and Q3, so $d_1=D_{buck}$ and $d_3=1-D_{boost}$ in the transition region; $d_3$ must not be confused with $D_{boost}$.
+
+The lower panel gives the three conducting-device combinations, their inductor voltages, and their durations within one switching period. Applying inductor volt-second balance to these intervals gives the voltage-ratio and fixed duty-difference relationships shown below the sequence.
 
 When power flows from port A to port B and $V_{A} > V_{B}$, the voltage must be stepped down, so the converter operates in the **buck region**. The A-side bridge leg is PWM-modulated to control how much energy the inductor absorbs each cycle; the B-side bridge leg mainly remains synchronously on to deliver inductor current to port B. Ideally, the duty cycle approximately satisfies
 
@@ -658,7 +680,7 @@ Discontinuous-current intervals have appeared in light-load simulation, but smal
 
 ![PSIM simulation model of the four-switch bidirectional buck-boost converter](assets/design-report/psim-model.png)
 
-Figure 1 PSIM simulation model of the four-switch bidirectional buck-boost converter
+Figure 4 PSIM simulation model of the four-switch bidirectional buck-boost converter
 
 The first stage uses ideal MOSFET and inductor models to verify bidirectional power flow, steady-state parameters, and the correctness of the power-stage topology.
 
@@ -668,7 +690,7 @@ The second stage adds Level 2 MOSFET models, a Level 1 inductor model, 12 V gate
 
 ![Bus-voltage response as port A voltage transitions through 30 V, 24 V, and 18 V](assets/design-report/forward-voltage-transition.png)
 
-Figure 2 Bus-voltage responses at both ports as port A changes through 30 V, 24 V, and 18 V
+Figure 5 Bus-voltage responses at both ports as port A changes through 30 V, 24 V, and 18 V
 
 This figure includes startup and operating-point transitions. Port B reaches a minimum of approximately 11 V in the early portion, so the figure illustrates the controller's operation across buck, the transition region, and boost; it is not evidence that final voltage-regulation performance has passed. Startup, input-step, and steady-state windows will be presented separately later.
 
@@ -676,7 +698,7 @@ This figure includes startup and operating-point transitions. Port B reaches a m
 
 ![Inductor-current dynamic response under combined forward operating conditions](assets/design-report/inductor-current-transient.png)
 
-Figure 3 Inductor-current dynamic response under combined forward operating conditions
+Figure 6 Inductor-current dynamic response under combined forward operating conditions
 
 Inductor current changes with input voltage, load, and operating region. Significant transient peaks occur during transitions. The current results mainly demonstrate continuous operation of the state machine and power-flow direction; peak current and recovery time still need to be quantified separately in waveforms for individual operating conditions.
 
@@ -684,7 +706,7 @@ Inductor current changes with input voltage, load, and operating region. Signifi
 
 ![Heavy-load CCM inductor current](assets/design-report/ccm-inductor-current.png)
 
-Figure 4 Heavy-load CCM steady-state inductor current
+Figure 7 Heavy-load CCM steady-state inductor current
 
 The inductor current remains continuous within the selected steady-state window, with a peak-to-peak value of approximately 1.4 A, broadly consistent with the theoretical ripple check for the 33 µH inductor.
 
@@ -692,7 +714,7 @@ The inductor current remains continuous within the selected steady-state window,
 
 ![Light-load DCM inductor current](assets/design-report/dcm-inductor-current.png)
 
-Figure 5 Light-load DCM inductor current
+Figure 8 Light-load DCM inductor current
 
 Zero-current intervals are already present, but small negative oscillations remain after zero crossing. This waveform is therefore only an interim DCM result; the ZCD threshold, mode-exit conditions, and synchronous-MOSFET turn-off timing still need further optimization.
 
@@ -700,7 +722,7 @@ Zero-current intervals are already present, but small negative oscillations rema
 
 ![Reverse 24 V to 30 V boost response](assets/design-report/reverse-boost-24-to-30.png)
 
-Figure 6 24 V to 30 V boost response during power transfer from port B to port A
+Figure 9 24 V to 30 V boost response during power transfer from port B to port A
 
 In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 30 V. In the figure, VBUS_A (green) and VBUS_B (red) are the two bus voltages in V; iL (blue) is the inductor current, while I_CONNECTOR_A (light orange) and I_CONNECTOR_B (orange) are the two port currents in A. The horizontal axis is time. Inductor current is defined as positive from A→B, so iL is negative during reverse power transfer. The waveforms show port A voltage recovering to approximately 30 V after a transient. The actual bus voltage at port B is given by the red curve; a nominal 24 V does not mean it remains at 24 V throughout the entire process.
 
@@ -708,15 +730,15 @@ In this operating condition, port B supplies power to port A. Port B has a nomin
 
 ![Reverse 24 V to 18 V buck response](assets/design-report/reverse-buck-24-to-18.png)
 
-Figure 7 24 V to 18 V buck response during power transfer from port B to port A
+Figure 10 24 V to 18 V buck response during power transfer from port B to port A
 
-In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 18 V. Curve names, units, and the positive inductor-current direction are the same as in Figure 6. Port A voltage initially drops to approximately 10 V and then recovers to approximately 18 V; negative inductor current corresponds to B→A energy transfer. This figure therefore illustrates the reverse buck dynamic process and cannot establish that voltage-regulation accuracy requirements have been met throughout the entire process.
+In this operating condition, port B supplies power to port A. Port B has a nominal voltage of 24 V, and the target voltage at port A is 18 V. Curve names, units, and the positive inductor-current direction are the same as in Figure 9. Port A voltage initially drops to approximately 10 V and then recovers to approximately 18 V; negative inductor current corresponds to B→A energy transfer. This figure therefore illustrates the reverse buck dynamic process and cannot establish that voltage-regulation accuracy requirements have been met throughout the entire process.
 
 ### 9.8 Gate-to-Source Voltages of the Four MOSFETs
 
 ![VGS waveforms of Q1 Q2 Q3 Q4](assets/design-report/mosfet-gate-voltages.png)
 
-Figure 8 VGS waveforms of Q1 Q2 Q3 Q4
+Figure 11 VGS waveforms of Q1 Q2 Q3 Q4
 
 This time scale confirms that the four PWM signals and gate-drive logic can operate, but it is insufficient to verify the 200 ns dead time. The time axis must later be expanded around the switching edges, and effective dead time must be measured at the MOSFET pins on the actual board.
 
@@ -728,7 +750,7 @@ This time scale confirms that the four PWM signals and gate-drive logic can oper
 
 ![Back of the bare main power PCB](assets/design-report/power-board-back.jpeg)
 
-Figure 9 Front and back of the bare main power PCB
+Figure 12 Front and back of the bare main power PCB
 
 A two-layer MCU daughterboard was also designed to connect the controller to the main power board, with expansion control and OLED display interfaces reserved. It can later display power-flow direction, efficiency, fault status, and key measured quantities. Both the main power board and the daughterboard are currently bare PCBs; component assembly and power-up have not yet been completed.
 
@@ -738,7 +760,7 @@ A two-layer MCU daughterboard was also designed to connect the controller to the
 
 ![MCU daughterboard assembly view](assets/design-report/controller-assembly.jpeg)
 
-Figure 10 MCU daughterboard and OLED mounting arrangement
+Figure 13 MCU daughterboard and OLED mounting arrangement
 
 ### 10.2 First Power-Up Sequence
 
